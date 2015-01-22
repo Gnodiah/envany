@@ -10,31 +10,44 @@ case $distri in
 esac
 PM_SUDO="sudo $PM"
 
-# install necessary libs and tools
+# install suggested build environment 
 #$PM_SUDO update
-$PM_SUDO install -y gcc make git openssl openssh-server
+$PM_SUDO install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm3 libgdbm-dev
+
+# install neccessary libs and tools
+$PM_SUDO install -y gcc make git openssl openssh-server 
 
 # install rbenv and ruby-build
 if [ "`type rbenv`" != *"not found"* ]; then
-	echo "--> rbenv has been installed in `which rbenv`"
+	echo "--> rbenv has been installed in `which rbenv`."
 else
-	echo "--> installing rbenv ..."
+	echo "--> Installing rbenv ..."
 	git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
 	echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 	echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 	source ~/.bashrc
 
 	if [ "`type rbenv`" != *"not found"* ]; then
-		echo "--> rbenv has been installed successfully in `which rbenv`"
+		echo "--> rbenv has been installed successfully in `which rbenv`."
 	fi
 
-	echo "--> installing ruby-build ..."
+	echo "--> Installing ruby-build ..."
 	git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
 
 	if [ "`rbenv install | grep 'Usage'`" != "" ]; then
-		echo "--> ruby-build has been installed successfully(`rbenv install --versioin`)"
+		echo "--> ruby-build has been installed successfully(`rbenv install --versioin`)."
 	fi
 fi
 
 # install ruby
-rbenv install ${RUBY_DEFAULT}
+if [ "`rbenv versions | grep ${RUBY_DEFAULT}`" != "" ]; then
+	echo "--> rbenv has installed the following ruby versions:"
+	rbenv versions
+	echo "--> ruby ${RUBY_DEFAULT} already has been installed, no need to install."
+else
+	rbenv install ${RUBY_DEFAULT}
+fi
+
+# set default global ruby version
+rbenv global ${RUBY_DEFAULT}
+rbenv rehash
