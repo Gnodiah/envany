@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+RUBY_DEFAULT=2.2.0
